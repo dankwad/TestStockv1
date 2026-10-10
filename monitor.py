@@ -2,7 +2,8 @@ import requests
 import os
 
 URL = "https://organicclimbing.com/collections/blemish-seconds-pads/products.json"
-WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK", "")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
 def check_stock():
     try:
@@ -20,7 +21,13 @@ def check_stock():
 if check_stock():
     msg = "🚨 IN STOCK! Blemished Big 5 Pad is available! https://organicclimbing.com/collections/blemish-seconds-pads"
     print(msg)
-    if WEBHOOK_URL:
-        requests.post(WEBHOOK_URL, json={"content": msg})
+    
+    if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
+        tg_url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": msg
+        }
+        requests.post(tg_url, json=payload)
 else:
     print("Not in stock yet.")
